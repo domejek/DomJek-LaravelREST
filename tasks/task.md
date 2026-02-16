@@ -23,14 +23,14 @@ Entwickle eine RESTful API für ein einfaches Aufgaben-Management-System mit ein
 ### Anforderungen
 
 #### 1. Datenbankmodell
-- [ ] Erstelle ein Datenbankmodell für Aufgaben mit folgenden Feldern:
+- [x] Erstelle ein Datenbankmodell für Aufgaben mit folgenden Feldern:
   - Titel
   - Beschreibung
   - Status
-- [ ] Verwende Laravel-Migrationen zur Erstellung der Datenbankstruktur
+- [x] Verwende Laravel-Migrationen zur Erstellung der Datenbankstruktur
 
 #### 2. Eloquent-Modell
-- [ ] Implementiere ein Eloquent-Modell für Aufgaben mit den entsprechenden Beziehungen
+- [x] Implementiere ein Eloquent-Modell für Aufgaben mit den entsprechenden Beziehungen
 
 #### 3. Controller
 - [ ] Erstelle einen Controller für Aufgaben mit CRUD-Operationen:
@@ -51,15 +51,15 @@ Entwickle eine RESTful API für ein einfaches Aufgaben-Management-System mit ein
 - [ ] Nur authentifizierte Benutzer dürfen Aufgaben erstellen, bearbeiten oder löschen
 
 #### 7. Tests
-- [ ] Schreibe PHPUnit-Tests für wichtige API-Funktionen:
+- [x] Schreibe PHPUnit-Tests für wichtige API-Funktionen:
   - Erstellung
   - Aktualisierung
   - Löschung
   - Weitere wichtige Funktionen
 
 #### 8. Dokumentation
-- [ ] Erstelle eine umfassende README-Datei im Projekt
-- [ ] Beschreibe Installation und Verwendung der API
+- [x] Erstelle eine umfassende README-Datei im Projekt
+- [x] Beschreibe Installation und Verwendung der API
 
 ### Umsetzung
 - [ ] Erstelle einen eigenen Pull Request für die Grundprüfung
@@ -89,15 +89,15 @@ Nach erfolgreichem Abschluss der Grundprüfung soll eine hochperformante RESTful
 ### Anforderungen
 
 #### 1. Datenbankmodell erweitern
-- [ ] Erweitere das Datenbankmodell für Aufgaben um ein neues Feld **"deadline"** für den Fälligkeitszeitpunkt
-- [ ] Füge zwei zusätzliche Eloquent-Modelle hinzu:
+- [x] Erweitere das Datenbankmodell für Aufgaben um ein neues Feld **"deadline"** für den Fälligkeitszeitpunkt
+- [x] Füge zwei zusätzliche Eloquent-Modelle hinzu:
   - **Benutzer** (Users)
   - **Projekte** (Projects)
-- [ ] Stelle Beziehungen zwischen den Modellen her:
+- [x] Stelle Beziehungen zwischen den Modellen her:
   - Ein Benutzer kann mehrere Aufgaben haben (1:n)
   - Eine Aufgabe kann zu einem Projekt gehören (n:1)
   - Ein Projekt kann mehrere Aufgaben haben (1:n)
-- [ ] Implementiere Migrationen, um die Datenbankstruktur zu aktualisieren
+- [x] Implementiere Migrationen, um die Datenbankstruktur zu aktualisieren
 
 #### 2. Controller erweitern
 - [ ] Passe den Aufgaben-Controller an, um die neuen Beziehungen zu berücksichtigen
@@ -114,8 +114,8 @@ Nach erfolgreichem Abschluss der Grundprüfung soll eine hochperformante RESTful
 - [ ] Füge eine Middleware hinzu, um sicherzustellen, dass ein Benutzer nur auf seine eigenen Aufgaben zugreifen kann
 
 #### 5. Authentifizierung (optional)
-- [ ] Erweitere die Authentifizierung, um die **Rolle des Benutzers** zu berücksichtigen
-- [ ] Implementiere Admin-Rolle mit folgenden Berechtigungen:
+- [x] Erweitere die Authentifizierung, um die **Rolle des Benutzers** zu berücksichtigen
+- [x] Implementiere Admin-Rolle mit folgenden Berechtigungen:
   - Admins dürfen nicht nur ihre eigenen Aufgaben bearbeiten
   - Admins dürfen Aufgaben anderer Benutzer mit überfälligen Deadlines bearbeiten
   - Stelle sicher, dass die notwendige Autorisierung für Admin-Benutzer implementiert ist
@@ -128,15 +128,15 @@ Nach erfolgreichem Abschluss der Grundprüfung soll eine hochperformante RESTful
 - [ ] Gegebenenfalls eine **Benachrichtigung (Notification)** an den Benutzer senden
 
 #### 7. Tests
-- [ ] Schreibe PHPUnit-Tests für:
+- [x] Schreibe PHPUnit-Tests für:
   - Neue Funktionen
   - Leistungsfähigkeit der API
   - Event-Listener
   - Beziehungen zwischen Benutzern, Aufgaben und Projekten
 
 #### 8. Dokumentation
-- [ ] Ergänze die README-Datei um detaillierte Anweisungen zur Installation
-- [ ] Dokumentiere die Verwendung der erweiterten Funktionen
+- [x] Ergänze die README-Datei um detaillierte Anweisungen zur Installation
+- [x] Dokumentiere die Verwendung der erweiterten Funktionen
 
 ### Umsetzung
 - [ ] Erstelle einen eigenen Pull Request für die erweiterte Prüfung
@@ -248,29 +248,29 @@ GET    /api/projects/{id}/tasks - Aufgaben eines Projekts
 ## ✅ Checkliste für die Abgabe
 
 ### Grundprüfung
-- [ ] Datenbankmigrationen erstellt
-- [ ] Eloquent-Modelle implementiert
+- [x] Datenbankmigrationen erstellt
+- [x] Eloquent-Modelle implementiert
 - [ ] Controller mit CRUD-Operationen
 - [ ] RESTful-Routen definiert
 - [ ] Authentifizierungs-Middleware
 - [ ] API-Authentifizierung implementiert
-- [ ] PHPUnit-Tests geschrieben
-- [ ] README-Datei erstellt
+- [x] PHPUnit-Tests geschrieben
+- [x] README-Datei erstellt
 - [ ] Pull Request erstellt
 
 ### Erweiterte Prüfung
-- [ ] Deadline-Feld hinzugefügt
-- [ ] User- und Project-Modelle erstellt
-- [ ] Beziehungen implementiert
+- [x] Deadline-Feld hinzugefügt
+- [x] User- und Project-Modelle erstellt
+- [x] Beziehungen implementiert
 - [ ] Controller erweitert
 - [ ] Überfällige Aufgaben-Endpoint
 - [ ] Autorisierungs-Middleware
-- [ ] Admin-Rolle (optional)
+- [x] Admin-Rolle (optional)
 - [ ] Event-Listener für Aufgaben-Updates
 - [ ] Notification-System
 - [ ] Performance-Optimierung
-- [ ] Erweiterte Tests
-- [ ] README aktualisiert
+- [x] Erweiterte Tests
+- [x] README aktualisiert
 - [ ] Pull Request erstellt
 
 ### Zusatzaufgabe
