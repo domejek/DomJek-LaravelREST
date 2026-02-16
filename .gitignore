@@ -41,3 +41,5 @@ yarn-error.log
 *.swo               
 vendor/
 node_modules/
+./vendor/
+./node_modules/
