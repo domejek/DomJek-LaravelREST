@@ -33,22 +33,22 @@ Entwickle eine RESTful API für ein einfaches Aufgaben-Management-System mit ein
 - [x] Implementiere ein Eloquent-Modell für Aufgaben mit den entsprechenden Beziehungen
 
 #### 3. Controller
-- [ ] Erstelle einen Controller für Aufgaben mit CRUD-Operationen:
+- [x] Erstelle einen Controller für Aufgaben mit CRUD-Operationen:
   - **C**reate (Erstellen)
   - **R**ead (Lesen)
   - **U**pdate (Aktualisieren)
   - **D**elete (Löschen)
-- [ ] Validiere Benutzereingaben gemäß den Anforderungen
+- [x] Validiere Benutzereingaben gemäß den Anforderungen
 
 #### 4. RESTful-Routen
-- [ ] Lege RESTful-Routen für die Aufgaben-Controller-Methoden fest
+- [x] Lege RESTful-Routen für die Aufgaben-Controller-Methoden fest
 
 #### 5. Middleware
-- [ ] Implementiere eine Middleware, um sicherzustellen, dass alle Anfragen authentifiziert sind
+- [x] Implementiere eine Middleware, um sicherzustellen, dass alle Anfragen authentifiziert sind
 
 #### 6. Authentifizierung
-- [ ] Implementiere Benutzer-Authentifizierung für API-Anfragen
-- [ ] Nur authentifizierte Benutzer dürfen Aufgaben erstellen, bearbeiten oder löschen
+- [x] Implementiere Benutzer-Authentifizierung für API-Anfragen
+- [x] Nur authentifizierte Benutzer dürfen Aufgaben erstellen, bearbeiten oder löschen
 
 #### 7. Tests
 - [x] Schreibe PHPUnit-Tests für wichtige API-Funktionen:
@@ -60,6 +60,7 @@ Entwickle eine RESTful API für ein einfaches Aufgaben-Management-System mit ein
 #### 8. Dokumentation
 - [x] Erstelle eine umfassende README-Datei im Projekt
 - [x] Beschreibe Installation und Verwendung der API
+- [x] Erstelle detaillierte API-Dokumentation unter `/docs/api_dokumentation.md`
 
 ### Umsetzung
 - [ ] Erstelle einen eigenen Pull Request für die Grundprüfung
@@ -100,18 +101,18 @@ Nach erfolgreichem Abschluss der Grundprüfung soll eine hochperformante RESTful
 - [x] Implementiere Migrationen, um die Datenbankstruktur zu aktualisieren
 
 #### 2. Controller erweitern
-- [ ] Passe den Aufgaben-Controller an, um die neuen Beziehungen zu berücksichtigen
-- [ ] Implementiere Methoden, um Aufgaben für einen bestimmten Benutzer abzurufen
-- [ ] Implementiere Methoden, um Aufgaben für ein bestimmtes Projekt abzurufen
-- [ ] Erweitere das Projekt um die Möglichkeit, die Deadline einer Aufgabe zu aktualisieren
-- [ ] Implementiere eine zusätzliche Methode, um alle **überfälligen Aufgaben** zurückzugeben
+- [x] Passe den Aufgaben-Controller an, um die neuen Beziehungen zu berücksichtigen
+- [x] Implementiere Methoden, um Aufgaben für einen bestimmten Benutzer abzurufen
+- [x] Implementiere Methoden, um Aufgaben für ein bestimmtes Projekt abzurufen
+- [x] Erweitere das Projekt um die Möglichkeit, die Deadline einer Aufgabe zu aktualisieren
+- [x] Implementiere eine zusätzliche Methode, um alle **überfälligen Aufgaben** zurückzugeben
 
 #### 3. RESTful-Routen
-- [ ] Füge RESTful-Routen hinzu, um die neuen Controller-Methoden anzusprechen
+- [x] Füge RESTful-Routen hinzu, um die neuen Controller-Methoden anzusprechen
 
 #### 4. Middleware
-- [ ] Implementiere eine Middleware, um sicherzustellen, dass nur autorisierte Benutzer Aufgaben mit überfälligen Deadlines bearbeiten können
-- [ ] Füge eine Middleware hinzu, um sicherzustellen, dass ein Benutzer nur auf seine eigenen Aufgaben zugreifen kann
+- [x] Implementiere eine Middleware, um sicherzustellen, dass nur autorisierte Benutzer Aufgaben mit überfälligen Deadlines bearbeiten können
+- [x] Füge eine Middleware hinzu, um sicherzustellen, dass ein Benutzer nur auf seine eigenen Aufgaben zugreifen kann
 
 #### 5. Authentifizierung (optional)
 - [x] Erweitere die Authentifizierung, um die **Rolle des Benutzers** zu berücksichtigen
@@ -123,9 +124,9 @@ Nach erfolgreichem Abschluss der Grundprüfung soll eine hochperformante RESTful
 **Begründung:** Diese Regelung ist sinnvoll, um sicherzustellen, dass Administratoren die Flexibilität haben, dringende Aufgaben im gesamten System zu verwalten und nicht nur auf ihre eigenen beschränkt sind.
 
 #### 6. Event-Listener
-- [ ] Implementiere einen Event-Listener, der aufgerufen wird, wenn eine Aufgabe aktualisiert wurde
-- [ ] Der Listener soll überprüfen, ob die Deadline abgelaufen ist
-- [ ] Gegebenenfalls eine **Benachrichtigung (Notification)** an den Benutzer senden
+- [x] Implementiere einen Event-Listener, der aufgerufen wird, wenn eine Aufgabe aktualisiert wurde
+- [x] Der Listener soll überprüfen, ob die Deadline abgelaufen ist
+- [x] Gegebenenfalls eine **Benachrichtigung (Notification)** an den Benutzer senden
 
 #### 7. Tests
 - [x] Schreibe PHPUnit-Tests für:
@@ -163,19 +164,19 @@ In der bestehenden Aufgaben-Management-Anwendung soll die Validierung der Benutz
 ### Aufgaben
 
 #### 1. Titel und Beschreibung
-- [ ] Begrenze die maximale Länge des Titels auf **255 Zeichen**
-- [ ] Stelle sicher, dass **Titel erforderlich** ist
-- [ ] Stelle sicher, dass **Beschreibung erforderlich** ist
+- [x] Begrenze die maximale Länge des Titels auf **255 Zeichen**
+- [x] Stelle sicher, dass **Titel erforderlich** ist
+- [x] Stelle sicher, dass **Beschreibung erforderlich** ist
 
 #### 2. Status
-- [ ] Stelle sicher, dass der Status nur bestimmte Werte annehmen kann:
+- [x] Stelle sicher, dass der Status nur bestimmte Werte annehmen kann:
   - `"todo"`
   - `"in_progress"`
   - `"done"`
 
 #### 3. Fälligkeitsdatum (Deadline)
-- [ ] Überprüfe, ob das Fälligkeitsdatum ein **gültiges Datum** ist
-- [ ] Stelle sicher, dass das Datum **in der Zukunft liegt**
+- [x] Überprüfe, ob das Fälligkeitsdatum ein **gültiges Datum** ist
+- [x] Stelle sicher, dass das Datum **in der Zukunft liegt**
 
 ### Validierungsregeln - Übersicht
 
@@ -231,6 +232,7 @@ Tasks (Aufgaben)
 POST   /api/register          - Benutzerregistrierung
 POST   /api/login             - Benutzeranmeldung
 POST   /api/logout            - Benutzerabmeldung
+GET    /api/user             - Aktuellen Benutzer abrufen
 
 GET    /api/tasks             - Alle Aufgaben auflisten
 POST   /api/tasks             - Neue Aufgabe erstellen
@@ -241,6 +243,12 @@ DELETE /api/tasks/{id}        - Aufgabe löschen
 GET    /api/tasks/overdue     - Überfällige Aufgaben
 GET    /api/users/{id}/tasks  - Aufgaben eines Benutzers
 GET    /api/projects/{id}/tasks - Aufgaben eines Projekts
+
+GET    /api/projects          - Alle Projekte auflisten
+POST   /api/projects          - Neues Projekt erstellen
+GET    /api/projects/{id}     - Einzelnes Projekt anzeigen
+PUT    /api/projects/{id}     - Projekt aktualisieren
+DELETE /api/projects/{id}     - Projekt löschen
 ```
 
 ---
@@ -250,10 +258,10 @@ GET    /api/projects/{id}/tasks - Aufgaben eines Projekts
 ### Grundprüfung
 - [x] Datenbankmigrationen erstellt
 - [x] Eloquent-Modelle implementiert
-- [ ] Controller mit CRUD-Operationen
-- [ ] RESTful-Routen definiert
-- [ ] Authentifizierungs-Middleware
-- [ ] API-Authentifizierung implementiert
+- [x] Controller mit CRUD-Operationen
+- [x] RESTful-Routen definiert
+- [x] Authentifizierungs-Middleware
+- [x] API-Authentifizierung implementiert
 - [x] PHPUnit-Tests geschrieben
 - [x] README-Datei erstellt
 - [ ] Pull Request erstellt
@@ -262,32 +270,35 @@ GET    /api/projects/{id}/tasks - Aufgaben eines Projekts
 - [x] Deadline-Feld hinzugefügt
 - [x] User- und Project-Modelle erstellt
 - [x] Beziehungen implementiert
-- [ ] Controller erweitert
-- [ ] Überfällige Aufgaben-Endpoint
-- [ ] Autorisierungs-Middleware
+- [x] Controller erweitert
+- [x] Überfällige Aufgaben-Endpoint
+- [x] Autorisierungs-Middleware
 - [x] Admin-Rolle (optional)
-- [ ] Event-Listener für Aufgaben-Updates
-- [ ] Notification-System
-- [ ] Performance-Optimierung
+- [x] Event-Listener für Aufgaben-Updates
+- [x] Notification-System
+- [x] Performance-Optimierung
 - [x] Erweiterte Tests
 - [x] README aktualisiert
+- [x] Project Controller mit CRUD
 - [ ] Pull Request erstellt
 
 ### Zusatzaufgabe
-- [ ] Validierung für Titel (max 255, required)
-- [ ] Validierung für Beschreibung (required)
-- [ ] Validierung für Status (enum)
-- [ ] Validierung für Deadline (date, future)
-- [ ] Tests für Validierungen
+- [x] Validierung für Titel (max 255, required)
+- [x] Validierung für Beschreibung (required)
+- [x] Validierung für Status (enum)
+- [x] Validierung für Deadline (date, future)
+- [x] Tests für Validierungen
+- [x] Project CRUD mit Validierung
 - [ ] Pull Request erstellt
 
 ### Allgemein
-- [ ] Code folgt Laravel Best Practices
-- [ ] Code ist gut dokumentiert
-- [ ] Code ist lesbar und strukturiert
+- [x] Code folgt Laravel Best Practices
+- [x] Code ist gut dokumentiert
+- [x] Code ist lesbar und strukturiert
+- [x] API-Dokumentation unter /docs erstellt
 - [ ] Öffentliches GitHub-Repository erstellt
 - [ ] Alle Pull Requests sind sauber getrennt
-- [ ] README ist vollständig und verständlich
+- [x] README ist vollständig und verständlich
 
 ---
 

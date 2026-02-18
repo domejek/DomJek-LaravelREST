@@ -428,6 +428,11 @@ curl -X DELETE http://localhost:8000/api/tasks/1 \
 | GET | {{base_url}}/tasks/overdue | Überfällige Tasks |
 | GET | {{base_url}}/users/{id}/tasks | Tasks nach Benutzer |
 | GET | {{base_url}}/projects/{id}/tasks | Tasks nach Projekt |
+| GET | {{base_url}}/projects | Alle Projekte |
+| POST | {{base_url}}/projects | Projekt erstellen |
+| GET | {{base_url}}/projects/{id} | Projekt anzeigen |
+| PUT | {{base_url}}/projects/{id} | Projekt aktualisieren |
+| DELETE | {{base_url}}/projects/{id} | Projekt löschen |
 
 ---
 
@@ -444,3 +449,206 @@ curl -X DELETE http://localhost:8000/api/tasks/1 \
 | 404 | Nicht gefunden |
 | 422 | Validierungsfehler |
 | 500 | Server Error |
+
+---
+
+## CRUD Operationen für Projekte
+
+### 1. Alle Projekte auflisten
+
+**Endpoint:** `GET /api/projects`
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response (200):**
+```json
+[
+    {
+        "id": 1,
+        "user_id": 1,
+        "name": "Projekt 1",
+        "description": "Beschreibung des Projekts",
+        "created_at": "2026-02-17T10:00:00.000000Z",
+        "updated_at": "2026-02-17T10:00:00.000000Z",
+        "user": {...}
+    }
+]
+```
+
+---
+
+### 2. Einzelnes Projekt anzeigen
+
+**Endpoint:** `GET /api/projects/{id}`
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response (200):**
+```json
+{
+    "id": 1,
+    "user_id": 1,
+    "name": "Projekt 1",
+    "description": "Beschreibung des Projekts",
+    "created_at": "2026-02-17T10:00:00.000000Z",
+    "updated_at": "2026-02-17T10:00:00.000000Z",
+    "user": {...},
+    "tasks": [...]
+}
+```
+
+---
+
+### 3. Projekt erstellen
+
+**Endpoint:** `POST /api/projects`
+
+**Headers:**
+```
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+    "name": "Neues Projekt",
+    "description": "Projektbeschreibung (optional)"
+}
+```
+
+**Validierungsregeln:**
+| Feld | Regel | Beschreibung |
+|------|-------|--------------|
+| name | required, max:255 | Erforderlich, maximal 255 Zeichen |
+| description | nullable, string | Optional |
+
+**Response (201):**
+```json
+{
+    "id": 2,
+    "user_id": 1,
+    "name": "Neues Projekt",
+    "description": "Projektbeschreibung",
+    "created_at": "2026-02-17T12:00:00.000000Z",
+    "updated_at": "2026-02-17T12:00:00.000000Z",
+    "user": {...}
+}
+```
+
+---
+
+### 4. Projekt aktualisieren
+
+**Endpoint:** `PUT /api/projects/{id}` oder `PATCH /api/projects/{id}`
+
+**Headers:**
+```
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+    "name": "Aktualisierter Name",
+    "description": "Aktualisierte Beschreibung"
+}
+```
+
+**Response (200):**
+```json
+{
+    "id": 2,
+    "user_id": 1,
+    "name": "Aktualisierter Name",
+    "description": "Aktualisierte Beschreibung",
+    ...
+}
+```
+
+---
+
+### 5. Projekt löschen
+
+**Endpoint:** `DELETE /api/projects/{id}`
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response (204):**
+```
+(No content)
+```
+
+---
+
+## Event-Listener und Benachrichtigungen
+
+### Task Updated Event
+
+Wenn eine Aufgabe aktualisiert wird, wird automatisch das `TaskUpdated` Event ausgelöst.
+
+**Event:** `App\Events\TaskUpdated`
+
+**Listener:** `App\Listeners\CheckTaskDeadline`
+
+### Benachrichtigung bei überfälliger Deadline
+
+Wenn eine Aufgabe aktualisiert wird und die Deadline abgelaufen ist, wird eine E-Mail-Benachrichtigung an den Benutzer gesendet.
+
+**Notification:** `App\Notifications\TaskDeadlineNotification`
+
+**Betreff:** "Task Deadline Passed"
+
+**Inhalt:**
+- Titel der Aufgabe
+- Hinweis, dass die Deadline überschritten wurde
+- Link zur Aufgabe
+
+---
+
+## Test-Dokumentation
+
+### Alle Tests ausführen
+
+```bash
+php artisan test
+```
+
+### Nur Auth-Tests
+
+```bash
+php artisan test --filter=AuthTest
+```
+
+### Nur Task-Tests
+
+```bash
+php artisan test --filter=TaskCrudTest
+```
+
+### Nur Project-Tests
+
+```bash
+php artisan test --filter=ProjectCrudTest
+```
+
+### Test-Abdeckung
+
+| Test-Suite | Anzahl Tests | Beschreibung |
+|------------|-------------|-------------|
+| AuthTest | 7 | Registrierung, Login, Logout |
+| TaskCrudTest | 25 | CRUD + Validierung + Rechte |
+| ProjectCrudTest | 15 | CRUD + Validierung + Rechte |
+| Unit Tests | 6 | Model-Tests |
+
+**Gesamt:** 51 Tests
