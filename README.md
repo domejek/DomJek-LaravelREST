@@ -17,9 +17,10 @@ Eine RESTful API für ein Aufgaben-Management-System mit Laravel.
 ## Tech Stack
 
 - **Backend:** Laravel 11
-- **Datenbank:** MySQL
+- **Datenbank:** MySQL / SQLite (Testing)
 - **Auth:** Laravel Sanctum
 - **Testing:** PHPUnit
+- **CI/CD:** GitHub Actions
 
 ## Installation
 
@@ -176,6 +177,20 @@ Nur Unit-Tests:
 ```bash
 php artisan test --filter=Unit
 ```
+
+## CI/CD
+
+Das Projekt verwendet GitHub Actions für Continuous Integration und Deployment:
+
+| Workflow | Beschreibung |
+|----------|--------------|
+| **CI** | PHPUnit Tests (PHP 8.2-8.4) + Laravel Pint Code Style |
+| **Docker** | Docker Image Build & Push zu GitHub Container Registry |
+| **Security** | Composer Audit + Security Scanner (wöchentlich) |
+
+**Dependabot** aktualisiert automatisch Dependencies für composer, npm und GitHub Actions.
+
+Details: [docs/github_actions.md](docs/github_actions.md)
 
 ## Dokumentation
 
