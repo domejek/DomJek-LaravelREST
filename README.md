@@ -163,20 +163,39 @@ Bei jeder Task-Aktualisierung wird geprüft, ob die Deadline abgelaufen ist. Ist
 
 ## Tests
 
-Alle Tests ausführen:
+Das Projekt verfügt über eine umfassende Test-Suite mit **116 Tests** und **270 Assertions**.
+
+### Alle Tests ausführen
 ```bash
 php artisan test
 ```
 
-Nur Feature-Tests:
+### Nach Kategorie filtern
 ```bash
+# Nur Feature-Tests
 php artisan test --filter=Feature
-```
 
-Nur Unit-Tests:
-```bash
+# Nur Unit-Tests
 php artisan test --filter=Unit
 ```
+
+### Test-Abdeckung
+
+| Kategorie | Test-Klasse | Tests | Beschreibung |
+|-----------|-------------|-------|--------------|
+| **Feature** | AuthTest | 14 | Registrierung, Login, Logout, Validierung |
+| **Feature** | TaskCrudTest | 35 | CRUD, Validierung, Rechte, 404, Relations |
+| **Feature** | ProjectCrudTest | 22 | CRUD, Validierung, Rechte, 404 |
+| **Unit** | TaskModelTest | 6 | Model-Beziehungen, Fillable |
+| **Unit** | ProjectModelTest | 5 | Model-Beziehungen, Fillable |
+| **Unit** | UserModelTest | 6 | Model-Beziehungen, isAdmin() |
+| **Unit** | TaskUpdatedEventTest | 3 | Event-Erstellung, Dispatch |
+| **Unit** | CheckTaskDeadlineListenerTest | 3 | Notification-Trigger |
+| **Unit** | TaskDeadlineNotificationTest | 4 | Mail/Array Format, ShouldQueue |
+| **Unit** | TaskFormRequestTest | 10 | Store/Update Validierungsregeln |
+| **Unit** | ProjectFormRequestTest | 8 | Store/Update Validierungsregeln |
+
+Detaillierte Test-Dokumentation: [docs/testing.md](docs/testing.md)
 
 ## CI/CD
 
@@ -194,8 +213,7 @@ Details: [docs/github_actions.md](docs/github_actions.md)
 
 ## Dokumentation
 
-Detaillierte API-Dokumentation: [docs/api_dokumentation.md](docs/api_dokumentation.md)
-
-## Lizenz
-
-MIT License
+- **API-Dokumentation:** [docs/api_dokumentation.md](docs/api_dokumentation.md)
+- **Eloquent Modelle:** [docs/eloquent_modelle.md](docs/eloquent_modelle.md)
+- **Testing:** [docs/testing.md](docs/testing.md)
+- **CI/CD:** [docs/github_actions.md](docs/github_actions.md)

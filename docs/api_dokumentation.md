@@ -624,31 +624,42 @@ Wenn eine Aufgabe aktualisiert wird und die Deadline abgelaufen ist, wird eine E
 php artisan test
 ```
 
-### Nur Auth-Tests
+### Nach Kategorie filtern
 
 ```bash
+# Nur Auth-Tests
 php artisan test --filter=AuthTest
-```
 
-### Nur Task-Tests
-
-```bash
+# Nur Task-Tests
 php artisan test --filter=TaskCrudTest
-```
 
-### Nur Project-Tests
-
-```bash
+# Nur Project-Tests
 php artisan test --filter=ProjectCrudTest
+
+# Nur Unit-Tests
+php artisan test --filter=Unit
 ```
 
 ### Test-Abdeckung
 
-| Test-Suite | Anzahl Tests | Beschreibung |
-|------------|-------------|-------------|
-| AuthTest | 7 | Registrierung, Login, Logout |
-| TaskCrudTest | 25 | CRUD + Validierung + Rechte |
-| ProjectCrudTest | 15 | CRUD + Validierung + Rechte |
-| Unit Tests | 6 | Model-Tests |
+**Gesamt: 116 Tests, 270 Assertions**
 
-**Gesamt:** 51 Tests
+| Test-Suite | Tests | Beschreibung |
+|------------|-------|-------------|
+| **Feature Tests** | | |
+| AuthTest | 14 | Registrierung, Login, Logout, Validierung |
+| TaskCrudTest | 35 | CRUD + Validierung + Rechte + 404 |
+| ProjectCrudTest | 22 | CRUD + Validierung + Rechte + 404 |
+| **Unit Tests** | | |
+| TaskModelTest | 6 | Model-Beziehungen, Fillable |
+| ProjectModelTest | 5 | Model-Beziehungen, Fillable |
+| UserModelTest | 6 | Model-Beziehungen, isAdmin() |
+| TaskUpdatedEventTest | 3 | Event-Erstellung, Dispatch |
+| CheckTaskDeadlineListenerTest | 3 | Notification-Trigger |
+| TaskDeadlineNotificationTest | 4 | Mail/Array Format, ShouldQueue |
+| TaskFormRequestTest | 10 | Store/Update Validierungsregeln |
+| ProjectFormRequestTest | 8 | Store/Update Validierungsregeln |
+
+### Detaillierte Test-Dokumentation
+
+Siehe: [testing.md](testing.md)

@@ -247,4 +247,84 @@ class ProjectCrudTest extends TestCase
                 'tasks',
             ]);
     }
+
+    public function test_view_non_existent_project_returns_404(): void
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->getJson('/api/projects/9999');
+
+        $response->assertStatus(404);
+    }
+
+    public function test_update_non_existent_project_returns_404(): void
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->putJson('/api/projects/9999', [
+            'name' => 'New Name',
+        ]);
+
+        $response->assertStatus(404);
+    }
+
+    public function test_delete_non_existent_project_returns_404(): void
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->deleteJson('/api/projects/9999');
+
+        $response->assertStatus(404);
+    }
+
+    public function test_unauthenticated_user_cannot_create_project(): void
+    {
+        $response = $this->postJson('/api/projects', [
+            'name' => 'Test Project',
+            'description' => 'Test Description',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_project_response_includes_user(): void
+    {
+        $project = Project::factory()->create(['user_id' => $this->user->id]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->getJson('/api/projects/'.$project->id);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'id',
+                'user' => ['id', 'name', 'email'],
+            ]);
+    }
+
+    public function test_project_creation_with_nullable_description(): void
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->postJson('/api/projects', [
+            'name' => 'Project without Description',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJson(['name' => 'Project without Description']);
+    }
+
+    public function test_project_update_with_description(): void
+    {
+        $project = Project::factory()->create(['user_id' => $this->user->id]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->putJson('/api/projects/'.$project->id, [
+            'description' => 'New Description',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson(['description' => 'New Description']);
+    }
 }

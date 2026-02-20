@@ -110,4 +110,82 @@ class AuthTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    public function test_registration_validates_password_confirmation(): void
+    {
+        $response = $this->postJson('/api/register', [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'differentpassword',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['password']);
+    }
+
+    public function test_registration_validates_password_min_length(): void
+    {
+        $response = $this->postJson('/api/register', [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'short',
+            'password_confirmation' => 'short',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['password']);
+    }
+
+    public function test_registration_validates_email_format(): void
+    {
+        $response = $this->postJson('/api/register', [
+            'name' => 'Test User',
+            'email' => 'invalid-email',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
+    }
+
+    public function test_login_validates_required_fields(): void
+    {
+        $response = $this->postJson('/api/login', []);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['email', 'password']);
+    }
+
+    public function test_login_validates_email_format(): void
+    {
+        $response = $this->postJson('/api/login', [
+            'email' => 'invalid-email',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
+    }
+
+    public function test_logout_without_token_returns_401(): void
+    {
+        $response = $this->postJson('/api/logout');
+
+        $response->assertStatus(401);
+    }
+
+    public function test_new_user_has_default_role(): void
+    {
+        $response = $this->postJson('/api/register', [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('user.role', 'user');
+    }
 }

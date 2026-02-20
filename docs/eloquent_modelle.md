@@ -95,7 +95,9 @@ $benutzer->tasks()->where('deadline', '<', now())->get();
 
 Die Tests befinden sich unter `/tests/Unit/` und testen folgende Szenarien:
 
-### TaskModelTest
+### Model Tests
+
+#### TaskModelTest (6 Tests)
 - Aufgabe gehört zu einem Benutzer
 - Aufgabe gehört zu einem Projekt
 - Aufgabe kann ein Fälligkeitsdatum haben
@@ -103,14 +105,14 @@ Die Tests befinden sich unter `/tests/Unit/` und testen folgende Szenarien:
 - Aufgabe kann mit Factory erstellt werden
 - Aufgabe hat Standard-Status
 
-### ProjectModelTest
+#### ProjectModelTest (5 Tests)
 - Projekt gehört zu einem Benutzer
 - Projekt hat viele Aufgaben
 - Projekt hat ausfüllbare Attribute
 - Projekt kann mit Factory erstellt werden
 - Projekt kann null Beschreibung haben
 
-### UserModelTest
+#### UserModelTest (6 Tests)
 - Benutzer hat viele Aufgaben
 - Benutzer hat viele Projekte
 - isAdmin() gibt true für Admin zurück
@@ -118,9 +120,43 @@ Die Tests befinden sich unter `/tests/Unit/` und testen folgende Szenarien:
 - Benutzer hat Standard-Rolle
 - Benutzer hat ausfüllbare Attribute
 
+### Event & Listener Tests
+
+#### TaskUpdatedEventTest (3 Tests)
+- Event wird mit Task erstellt
+- Event wird mit Task und alter Deadline erstellt
+- Event ist dispatchable
+
+#### CheckTaskDeadlineListenerTest (3 Tests)
+- Listener sendet Benachrichtigung bei überfälliger Aufgabe
+- Listener sendet keine Benachrichtigung bei zukünftiger Deadline
+- Listener sendet keine Benachrichtigung ohne Deadline
+
+#### TaskDeadlineNotificationTest (4 Tests)
+- Notification verwendet Mail-Kanal
+- Notification Mail enthält Task-Titel
+- Notification toArray enthält Task-Daten
+- Notification implementiert ShouldQueue
+
+### Form Request Tests
+
+#### TaskFormRequestTest (10 Tests)
+- Store/Update Request authorize
+- Validierungsregeln für title, description, status, deadline, project_id
+- sometimes Validierung bei Update
+
+#### ProjectFormRequestTest (8 Tests)
+- Store/Update Request authorize
+- Validierungsregeln für name, description
+- sometimes Validierung bei Update
+
 ### Factories
 
 Unter `/database/factories/` befinden sich:
 - `UserFactory.php`: Erstellt Benutzer mit Standard-Rolle "user", unterstützt `admin()` Methode
 - `ProjectFactory.php`: Erstellt Projekt mit zufälligen Daten
 - `TaskFactory.php`: Erstellt Aufgabe mit zufälligen Daten, unterstützt `erledigt()`, `inArbeit()`, `ueberfaellig()` Methoden
+
+### Detaillierte Test-Dokumentation
+
+Siehe: [testing.md](testing.md)

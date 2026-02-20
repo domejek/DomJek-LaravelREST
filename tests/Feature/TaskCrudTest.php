@@ -402,4 +402,127 @@ class TaskCrudTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['deadline']);
     }
+
+    public function test_task_creation_with_project_id(): void
+    {
+        $project = Project::factory()->create(['user_id' => $this->user->id]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->postJson('/api/tasks', [
+            'title' => 'Task with Project',
+            'description' => 'Description',
+            'status' => 'todo',
+            'deadline' => now()->addDays(7)->format('Y-m-d H:i:s'),
+            'project_id' => $project->id,
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJson(['project_id' => $project->id]);
+
+        $this->assertDatabaseHas('tasks', [
+            'title' => 'Task with Project',
+            'project_id' => $project->id,
+        ]);
+    }
+
+    public function test_task_creation_validates_project_id_exists(): void
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->postJson('/api/tasks', [
+            'title' => 'Task',
+            'description' => 'Description',
+            'status' => 'todo',
+            'deadline' => now()->addDays(7)->format('Y-m-d H:i:s'),
+            'project_id' => 9999,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['project_id']);
+    }
+
+    public function test_view_non_existent_task_returns_404(): void
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->getJson('/api/tasks/9999');
+
+        $response->assertStatus(404);
+    }
+
+    public function test_update_non_existent_task_returns_404(): void
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->putJson('/api/tasks/9999', [
+            'title' => 'New Title',
+        ]);
+
+        $response->assertStatus(404);
+    }
+
+    public function test_delete_non_existent_task_returns_404(): void
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->deleteJson('/api/tasks/9999');
+
+        $response->assertStatus(404);
+    }
+
+    public function test_unauthenticated_user_cannot_create_task(): void
+    {
+        $response = $this->postJson('/api/tasks', [
+            'title' => 'Test Task',
+            'description' => 'Test Description',
+            'status' => 'todo',
+            'deadline' => now()->addDays(7)->format('Y-m-d H:i:s'),
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_admin_overdue_tasks_shows_all(): void
+    {
+        Task::factory()->create([
+            'user_id' => $this->user->id,
+            'deadline' => now()->subDay(),
+        ]);
+        Task::factory()->create([
+            'user_id' => $this->otherUser->id,
+            'deadline' => now()->subDay(),
+        ]);
+        Task::factory()->create([
+            'user_id' => $this->user->id,
+            'deadline' => now()->addDay(),
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->adminToken,
+        ])->getJson('/api/tasks/overdue');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(2);
+    }
+
+    public function test_task_response_includes_user_and_project(): void
+    {
+        $project = Project::factory()->create();
+        $task = Task::factory()->create([
+            'user_id' => $this->user->id,
+            'project_id' => $project->id,
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer '.$this->token,
+        ])->getJson('/api/tasks/'.$task->id);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'id',
+                'user' => ['id', 'name', 'email'],
+                'project' => ['id', 'name'],
+            ]);
+    }
 }
