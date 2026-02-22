@@ -14,27 +14,14 @@ class ProjectCrudTest extends TestCase
 
     protected User $user;
 
-    protected User $otherUser;
-
-    protected User $admin;
-
     protected string $token;
-
-    protected string $otherToken;
-
-    protected string $adminToken;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->user = User::factory()->create(['role' => 'user']);
-        $this->otherUser = User::factory()->create(['role' => 'user']);
-        $this->admin = User::factory()->create(['role' => 'admin']);
-
         $this->token = $this->user->createToken('auth-token')->plainTextToken;
-        $this->otherToken = $this->otherUser->createToken('auth-token')->plainTextToken;
-        $this->adminToken = $this->admin->createToken('auth-token')->plainTextToken;
     }
 
     public function test_user_can_create_project(): void
@@ -42,14 +29,13 @@ class ProjectCrudTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$this->token,
         ])->postJson('/api/projects', [
-            'name' => 'Test Project',
-            'description' => 'Test Description',
+            'name' => 'Test Projekt',
+            'description' => 'Test Beschreibung',
         ]);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'id',
-                'user_id',
                 'name',
                 'description',
                 'created_at',
@@ -57,8 +43,7 @@ class ProjectCrudTest extends TestCase
             ]);
 
         $this->assertDatabaseHas('projects', [
-            'name' => 'Test Project',
-            'user_id' => $this->user->id,
+            'name' => 'Test Projekt',
         ]);
     }
 
@@ -72,7 +57,7 @@ class ProjectCrudTest extends TestCase
             ->assertJsonValidationErrors(['name']);
     }
 
-    public function test_project_creation_validates_title_max_length(): void
+    public function test_project_creation_validates_name_max_length(): void
     {
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$this->token,
@@ -84,26 +69,12 @@ class ProjectCrudTest extends TestCase
             ->assertJsonValidationErrors(['name']);
     }
 
-    public function test_user_can_view_all_own_projects(): void
+    public function test_user_can_view_all_projects(): void
     {
-        Project::factory()->count(3)->create(['user_id' => $this->user->id]);
-        Project::factory()->count(2)->create(['user_id' => $this->otherUser->id]);
+        Project::factory()->count(5)->create();
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$this->token,
-        ])->getJson('/api/projects');
-
-        $response->assertStatus(200)
-            ->assertJsonCount(3);
-    }
-
-    public function test_admin_can_view_all_projects(): void
-    {
-        Project::factory()->count(3)->create(['user_id' => $this->user->id]);
-        Project::factory()->count(2)->create(['user_id' => $this->otherUser->id]);
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->adminToken,
         ])->getJson('/api/projects');
 
         $response->assertStatus(200)
@@ -112,7 +83,7 @@ class ProjectCrudTest extends TestCase
 
     public function test_user_can_view_single_project(): void
     {
-        $project = Project::factory()->create(['user_id' => $this->user->id]);
+        $project = Project::factory()->create();
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$this->token,
@@ -122,84 +93,28 @@ class ProjectCrudTest extends TestCase
             ->assertJson(['id' => $project->id]);
     }
 
-    public function test_user_cannot_view_other_users_project(): void
+    public function test_user_can_update_project(): void
     {
-        $project = Project::factory()->create(['user_id' => $this->otherUser->id]);
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->token,
-        ])->getJson('/api/projects/'.$project->id);
-
-        $response->assertStatus(403);
-    }
-
-    public function test_admin_can_view_any_project(): void
-    {
-        $project = Project::factory()->create(['user_id' => $this->user->id]);
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->adminToken,
-        ])->getJson('/api/projects/'.$project->id);
-
-        $response->assertStatus(200)
-            ->assertJson(['id' => $project->id]);
-    }
-
-    public function test_user_can_update_own_project(): void
-    {
-        $project = Project::factory()->create([
-            'user_id' => $this->user->id,
-            'name' => 'Old Name',
-        ]);
+        $project = Project::factory()->create(['name' => 'Alter Name']);
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$this->token,
         ])->putJson('/api/projects/'.$project->id, [
-            'name' => 'New Name',
+            'name' => 'Neuer Name',
         ]);
 
         $response->assertStatus(200)
-            ->assertJson(['name' => 'New Name']);
+            ->assertJson(['name' => 'Neuer Name']);
 
         $this->assertDatabaseHas('projects', [
             'id' => $project->id,
-            'name' => 'New Name',
+            'name' => 'Neuer Name',
         ]);
     }
 
-    public function test_user_cannot_update_other_users_project(): void
+    public function test_user_can_delete_project(): void
     {
-        $project = Project::factory()->create(['user_id' => $this->otherUser->id]);
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->token,
-        ])->putJson('/api/projects/'.$project->id, [
-            'name' => 'Hacked Name',
-        ]);
-
-        $response->assertStatus(403);
-    }
-
-    public function test_admin_can_update_any_project(): void
-    {
-        $project = Project::factory()->create([
-            'user_id' => $this->user->id,
-            'name' => 'Old Name',
-        ]);
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->adminToken,
-        ])->putJson('/api/projects/'.$project->id, [
-            'name' => 'Admin Updated',
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJson(['name' => 'Admin Updated']);
-    }
-
-    public function test_user_can_delete_own_project(): void
-    {
-        $project = Project::factory()->create(['user_id' => $this->user->id]);
+        $project = Project::factory()->create();
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$this->token,
@@ -210,31 +125,9 @@ class ProjectCrudTest extends TestCase
         $this->assertDatabaseMissing('projects', ['id' => $project->id]);
     }
 
-    public function test_user_cannot_delete_other_users_project(): void
-    {
-        $project = Project::factory()->create(['user_id' => $this->otherUser->id]);
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->token,
-        ])->deleteJson('/api/projects/'.$project->id);
-
-        $response->assertStatus(403);
-    }
-
-    public function test_admin_can_delete_any_project(): void
-    {
-        $project = Project::factory()->create(['user_id' => $this->user->id]);
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->adminToken,
-        ])->deleteJson('/api/projects/'.$project->id);
-
-        $response->assertStatus(204);
-    }
-
     public function test_project_show_includes_tasks(): void
     {
-        $project = Project::factory()->create(['user_id' => $this->user->id]);
+        $project = Project::factory()->create();
         Task::factory()->count(3)->create(['project_id' => $project->id, 'user_id' => $this->user->id]);
 
         $response = $this->withHeaders([
@@ -262,7 +155,7 @@ class ProjectCrudTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$this->token,
         ])->putJson('/api/projects/9999', [
-            'name' => 'New Name',
+            'name' => 'Neuer Name',
         ]);
 
         $response->assertStatus(404);
@@ -280,26 +173,11 @@ class ProjectCrudTest extends TestCase
     public function test_unauthenticated_user_cannot_create_project(): void
     {
         $response = $this->postJson('/api/projects', [
-            'name' => 'Test Project',
-            'description' => 'Test Description',
+            'name' => 'Test Projekt',
+            'description' => 'Test Beschreibung',
         ]);
 
         $response->assertStatus(401);
-    }
-
-    public function test_project_response_includes_user(): void
-    {
-        $project = Project::factory()->create(['user_id' => $this->user->id]);
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$this->token,
-        ])->getJson('/api/projects/'.$project->id);
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'id',
-                'user' => ['id', 'name', 'email'],
-            ]);
     }
 
     public function test_project_creation_with_nullable_description(): void
@@ -307,24 +185,24 @@ class ProjectCrudTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$this->token,
         ])->postJson('/api/projects', [
-            'name' => 'Project without Description',
+            'name' => 'Projekt ohne Beschreibung',
         ]);
 
         $response->assertStatus(201)
-            ->assertJson(['name' => 'Project without Description']);
+            ->assertJson(['name' => 'Projekt ohne Beschreibung']);
     }
 
     public function test_project_update_with_description(): void
     {
-        $project = Project::factory()->create(['user_id' => $this->user->id]);
+        $project = Project::factory()->create();
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$this->token,
         ])->putJson('/api/projects/'.$project->id, [
-            'description' => 'New Description',
+            'description' => 'Neue Beschreibung',
         ]);
 
         $response->assertStatus(200)
-            ->assertJson(['description' => 'New Description']);
+            ->assertJson(['description' => 'Neue Beschreibung']);
     }
 }

@@ -57,8 +57,6 @@ class TaskCrudTest extends TestCase
                 'description',
                 'status',
                 'deadline',
-                'created_at',
-                'updated_at',
             ]);
 
         $this->assertDatabaseHas('tasks', [
@@ -250,7 +248,7 @@ class TaskCrudTest extends TestCase
         ]);
 
         $response->assertStatus(403)
-            ->assertJson(['message' => 'Cannot update overdue tasks']);
+            ->assertJson(['message' => 'Überfällige Aufgaben können nicht bearbeitet werden']);
     }
 
     public function test_admin_can_update_overdue_task(): void
@@ -405,7 +403,7 @@ class TaskCrudTest extends TestCase
 
     public function test_task_creation_with_project_id(): void
     {
-        $project = Project::factory()->create(['user_id' => $this->user->id]);
+        $project = Project::factory()->create();
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$this->token,

@@ -32,7 +32,7 @@ class TaskController extends Controller
     public function show(Request $request, Task $task): JsonResponse
     {
         if (! $request->user()->isAdmin() && $task->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Nicht autorisiert'], 403);
         }
 
         return response()->json($task->load(['user', 'project']));
@@ -41,11 +41,11 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Task $task): JsonResponse
     {
         if (! $request->user()->isAdmin() && $task->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Nicht autorisiert'], 403);
         }
 
         if ($task->deadline && $task->deadline->isPast() && ! $request->user()->isAdmin()) {
-            return response()->json(['message' => 'Cannot update overdue tasks'], 403);
+            return response()->json(['message' => 'Überfällige Aufgaben können nicht bearbeitet werden'], 403);
         }
 
         $oldDeadline = $task->deadline;
@@ -59,7 +59,7 @@ class TaskController extends Controller
     public function destroy(Request $request, Task $task): JsonResponse
     {
         if (! $request->user()->isAdmin() && $task->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Nicht autorisiert'], 403);
         }
 
         $task->delete();
@@ -82,7 +82,7 @@ class TaskController extends Controller
     public function byUser(Request $request, int $userId): JsonResponse
     {
         if (! $request->user()->isAdmin() && $request->user()->id !== $userId) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Nicht autorisiert'], 403);
         }
 
         $tasks = Task::with(['user', 'project'])

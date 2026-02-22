@@ -34,7 +34,7 @@ class TaskDeadlineNotificationTest extends TestCase
 
         $mail = $notification->toMail($user);
 
-        $this->assertEquals('Task Deadline Passed', $mail->subject);
+        $this->assertEquals('Aufgaben-Deadline überschritten', $mail->subject);
         $this->assertStringContainsString('Wichtige Aufgabe', $mail->render());
     }
 

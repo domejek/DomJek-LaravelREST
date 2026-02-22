@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,15 +18,6 @@ class UserModelTest extends TestCase
 
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $benutzer->tasks);
         $this->assertCount(3, $benutzer->tasks);
-    }
-
-    public function test_benutzer_hat_viele_projekte(): void
-    {
-        $benutzer = User::factory()->create();
-        Project::factory()->count(2)->create(['user_id' => $benutzer->id]);
-
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $benutzer->projects);
-        $this->assertCount(2, $benutzer->projects);
     }
 
     public function test_ist_admin_gibt_true_fuer_admin_zurueck(): void

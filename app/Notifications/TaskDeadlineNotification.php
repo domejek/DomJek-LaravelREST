@@ -22,10 +22,10 @@ class TaskDeadlineNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Task Deadline Passed')
-            ->line('Your task "'.$this->task->title.'" has passed its deadline.')
-            ->action('View Task', url('/api/tasks/'.$this->task->id))
-            ->line('Please update the task or contact your administrator.');
+            ->subject('Aufgaben-Deadline überschritten')
+            ->line('Ihre Aufgabe "'.$this->task->title.'" hat die Deadline überschritten.')
+            ->action('Aufgabe anzeigen', url('/api/tasks/'.$this->task->id))
+            ->line('Bitte aktualisieren Sie die Aufgabe oder kontaktieren Sie Ihren Administrator.');
     }
 
     public function toArray(object $notifiable): array
@@ -33,7 +33,7 @@ class TaskDeadlineNotification extends Notification implements ShouldQueue
         return [
             'task_id' => $this->task->id,
             'title' => $this->task->title,
-            'message' => 'Your task has passed its deadline.',
+            'message' => 'Ihre Aufgabe hat die Deadline überschritten.',
             'deadline' => $this->task->deadline,
         ];
     }

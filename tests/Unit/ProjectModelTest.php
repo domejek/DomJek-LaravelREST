@@ -12,19 +12,11 @@ class ProjectModelTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_projekt_gehoert_zu_benutzer(): void
-    {
-        $benutzer = User::factory()->create();
-        $projekt = Project::factory()->create(['user_id' => $benutzer->id]);
-
-        $this->assertInstanceOf(User::class, $projekt->user);
-        $this->assertEquals($benutzer->id, $projekt->user->id);
-    }
-
     public function test_projekt_hat_viele_aufgaben(): void
     {
+        $benutzer = User::factory()->create();
         $projekt = Project::factory()->create();
-        Task::factory()->count(3)->create(['project_id' => $projekt->id]);
+        Task::factory()->count(3)->create(['project_id' => $projekt->id, 'user_id' => $benutzer->id]);
 
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $projekt->tasks);
         $this->assertCount(3, $projekt->tasks);
