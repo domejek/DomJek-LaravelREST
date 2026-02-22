@@ -15,7 +15,7 @@ docker-compose up -d
 
 echo "4. Waiting for database to be ready..."
 for i in {1..30}; do
-    if docker-compose exec db mysql -uroot -proot -e "SELECT 1" &>/dev/null; then
+    if docker-compose exec -T db mysql -uroot -proot -e "SELECT 1" &>/dev/null; then
         echo "Database is ready!"
         break
     fi
@@ -23,24 +23,15 @@ for i in {1..30}; do
     sleep 2
 done
 
-echo "5. Creating Laravel project..."
-docker-compose exec app sh -c "composer create-project laravel/laravel /var/www/html --prefer-dist --no-interaction --no-scripts 2>/dev/null || true"
+echo "5. Installing dependencies..."
+docker-compose exec -T app composer install --no-interaction --prefer-dist
 
-echo "6. Moving Laravel files to /var/www..."
-docker-compose exec app sh -c "if [ -d /var/www/html ]; then cp -r /var/www/html/* /var/www/; rm -rf /var/www/html; fi"
+echo "6. Setting up environment..."
+docker-compose exec -T app sh -c "cp /var/www/.env.example /var/www/.env 2>/dev/null || true"
+docker-compose exec -T app php artisan key:generate
 
-echo "7. Installing dependencies..."
-docker-compose exec app composer install --no-interaction --prefer-dist
-
-echo "8. Copying migrations..."
-docker cp docker/migrations/. $(docker-compose ps -q app):/var/www/database/migrations/
-
-echo "9. Setting up environment..."
-docker-compose exec app sh -c "cp /var/www/.env.example /var/www/.env 2>/dev/null || true"
-docker-compose exec app php artisan key:generate
-
-echo "10. Configuring database..."
-docker-compose exec app php -r "
+echo "7. Configuring database..."
+docker-compose exec -T app php -r "
 \$env = file_get_contents('/var/www/.env');
 \$env = str_replace('DB_HOST=127.0.0.1', 'DB_HOST=db', \$env);
 \$env = str_replace('DB_PORT=3306', 'DB_PORT=3306', \$env);
@@ -50,12 +41,12 @@ docker-compose exec app php -r "
 file_put_contents('/var/www/.env', \$env);
 "
 
-echo "11. Running migrations..."
-docker-compose exec app php artisan migrate --force
+echo "8. Running migrations..."
+docker-compose exec -T app php artisan migrate --force
 
-echo "12. Setting permissions..."
-docker-compose exec app chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+echo "9. Setting permissions..."
+docker-compose exec -T app chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 echo "=== Deployment Complete ==="
-echo "Laravel app: http://localhost:8080"
+echo "Laravel API: http://localhost:8080"
 echo "MySQL: localhost:3306"

@@ -4,7 +4,42 @@
 
 Diese API ermöglicht das Verwalten von Aufgaben (Tasks) mit vollem CRUD-Support. Alle Endpoints (außer Register/Login) erfordern eine Authentifizierung via Laravel Sanctum Token.
 
-**Basis-URL:** `http://localhost:8000/api`
+**Basis-URL:**
+- Docker: `http://localhost:8080/api`
+- Lokal: `http://localhost:8000/api`
+
+> **Wichtig:** Immer den `Accept: application/json` Header senden, um JSON-Responses zu erhalten und Redirects bei Validierungsfehlern zu vermeiden.
+
+---
+
+## Docker Setup
+
+### Container starten
+```bash
+./build.sh
+```
+
+### Container verwalten
+```bash
+# Container stoppen
+docker-compose down
+
+# Logs anzeigen
+docker-compose logs -f app
+
+# In Container einloggen
+docker-compose exec app bash
+
+# Tests ausführen
+docker-compose exec app php artisan test
+```
+
+### Verfügbare Services
+| Service | Port | Beschreibung |
+|---------|------|--------------|
+| nginx | 8080 | Web Server |
+| app | 9000 | PHP-FPM |
+| db | 3306 | MySQL 8.0 |
 
 ---
 
@@ -363,44 +398,50 @@ Authorization: Bearer <token>
 
 ### Schritt 1: Registrierung
 ```bash
-curl -X POST http://localhost:8000/api/register \
+curl -X POST http://localhost:8080/api/register \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -d '{"name":"Test User","email":"test@example.com","password":"password123","password_confirmation":"password123"}'
 ```
 
 ### Schritt 2: Anmeldung (oder Token aus Registrierung verwenden)
 ```bash
-curl -X POST http://localhost:8000/api/login \
+curl -X POST http://localhost:8080/api/login \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -d '{"email":"test@example.com","password":"password123"}'
 ```
 
 ### Schritt 3: Task erstellen
 ```bash
-curl -X POST http://localhost:8000/api/tasks \
+curl -X POST http://localhost:8080/api/tasks \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -d '{"title":"Meine erste Aufgabe","description":"Beschreibung","status":"todo","deadline":"2026-03-01 12:00:00"}'
 ```
 
 ### Schritt 4: Tasks abrufen
 ```bash
-curl -X GET http://localhost:8000/api/tasks \
-  -H "Authorization: Bearer <token>"
+curl -X GET http://localhost:8080/api/tasks \
+  -H "Authorization: Bearer <token>" \
+  -H "Accept: application/json"
 ```
 
 ### Schritt 5: Task aktualisieren
 ```bash
-curl -X PUT http://localhost:8000/api/tasks/1 \
+curl -X PUT http://localhost:8080/api/tasks/1 \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -d '{"status":"in_progress"}'
 ```
 
 ### Schritt 6: Task löschen
 ```bash
-curl -X DELETE http://localhost:8000/api/tasks/1 \
-  -H "Authorization: Bearer <token>"
+curl -X DELETE http://localhost:8080/api/tasks/1 \
+  -H "Authorization: Bearer <token>" \
+  -H "Accept: application/json"
 ```
 
 ---
@@ -408,10 +449,12 @@ curl -X DELETE http://localhost:8000/api/tasks/1 \
 ## Postman-Konfiguration
 
 1. **Neue Collection erstellen** → "Task API"
-2. **Environment Variable hinzufügen:** `base_url = http://localhost:8000/api`
+2. **Environment Variable hinzufügen:** `base_url = http://localhost:8080/api`
 3. **Authentifizierung:**
    - Nach Login/Register: Token kopieren
    - In Collection → Auth → Bearer Token → `{{token}}` setzen
+4. **Headers setzen:**
+   - `Accept: application/json` (für alle Requests)
 
 ### Beispiel-Requests:
 

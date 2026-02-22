@@ -1,45 +1,60 @@
-/vendor/
-/node_modules/
+* text=auto eol=lf
+
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
+
+/.github export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/tests export-ignore
+
 /.env
 /.env.*
-/!.env.example
-/storage/*.key
-/storage/logs/
-/storage/framework/cache/
-/storage/framework/sessions/
-/storage/framework/views/
+/.env.example
+
+/vendor
+/node_modules
+
 /.phpunit.result.cache
-/bootstrap/cache/
-/.DS_Store
+/phpunit.xml
+
+/bootstrap/cache
+/storage/*.key
+/storage/logs
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/views
+
 Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
-.idea/
-.vscode/
+
+.idea
+.vscode
 *.sublime-project
 *.sublime-workspace
 *.code-workspace
+
+.DS_Store
+Thumbs.db
+
 *.log
 *.sql
 *.sqlite
 *.bak
 *.zip
 *.tar.gz
-*.env
-*.env.*
 *.pem
 *.key
 *.crt
 *.cer
 *.pfx
 *.p12
-*.log
 *.cache
 *.tmp
 *.swp
-*.swo               
-vendor/
-node_modules/
-./vendor/
-./node_modules/
+*.swo
