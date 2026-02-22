@@ -337,8 +337,8 @@ Alle Routen (außer Register/Login) erfordern einen gültigen Bearer Token im `A
 curl -X POST http://localhost:8000/api/register \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Max Mustermann",
-    "email": "max@example.com",
+    "name": "Mankurium",
+    "email": "mankurium@example.com",
     "password": "password123",
     "password_confirmation": "password123"
   }'
@@ -346,7 +346,7 @@ curl -X POST http://localhost:8000/api/register \
 
 ```json
 {
-  "user": { "id": 1, "name": "Max Mustermann", "email": "max@example.com", "role": "user" },
+  "user": { "id": 1, "name": "Mankurium", "email": "mankurium@example.com", "role": "user" },
   "token": "1|abc123..."
 }
 ```
@@ -358,8 +358,8 @@ curl -X POST http://localhost:8000/api/tasks \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "Meine Aufgabe",
-    "description": "Aufgabenbeschreibung",
+    "title": "Manatränke brauen",
+    "description": "Verjüngungstränke für Mana herstellen",
     "status": "todo",
     "deadline": "2026-12-01 10:00:00",
     "project_id": 1
@@ -425,7 +425,7 @@ Methode 2 – via Artisan (Docker):
 
 ```bash
 docker compose exec app php artisan tinker
-# Im Tinker:
+# In Tinker:
 \App\Models\User::where('email', 'deine@email.com')->update(['role' => 'admin']);
 ```
 
@@ -456,10 +456,10 @@ Nach der Rollenänderung erneut einloggen, um einen Token mit den neuen Berechti
 
 ```json
 {
-  "message": "The given data was invalid.",
+  "message": "Die übermittelten Daten sind ungültig.",
   "errors": {
-    "status": ["The selected status is invalid."],
-    "deadline": ["The deadline must be a date after now."]
+    "status": ["Der ausgewählte Status ist ungültig."],
+    "deadline": ["Das Fälligkeitsdatum muss ein Datum in der Zukunft sein."]
   }
 }
 ```
