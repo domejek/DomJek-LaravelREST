@@ -10,11 +10,13 @@
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /tests export-ignore
+.gitignore
 
 /.env
 /.env.*
 /.env.example
 
+/postman
 /vendor
 /node_modules
 
