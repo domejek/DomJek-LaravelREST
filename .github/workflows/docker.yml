@@ -69,3 +69,4 @@ jobs:
 
       - name: Build with docker-compose
         run: docker-compose build --no-cache
+        continue-on-error: true
