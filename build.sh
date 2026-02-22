@@ -4,8 +4,8 @@ set -e
 
 echo "=== Starting Laravel Deployment ==="
 
-echo "1. Stopping existing containers..."
-docker-compose down 2>/dev/null || true
+echo "1. Stopping existing containers and removing volumes..."
+docker-compose down -v 2>/dev/null || true
 
 echo "2. Building Docker containers..."
 docker-compose build --no-cache
@@ -31,14 +31,11 @@ docker-compose exec -T app sh -c "cp /var/www/.env.example /var/www/.env 2>/dev/
 docker-compose exec -T app php artisan key:generate
 
 echo "7. Configuring database..."
-docker-compose exec -T app php -r "
-\$env = file_get_contents('/var/www/.env');
-\$env = str_replace('DB_HOST=127.0.0.1', 'DB_HOST=db', \$env);
-\$env = str_replace('DB_PORT=3306', 'DB_PORT=3306', \$env);
-\$env = str_replace('DB_DATABASE=laravel', 'DB_DATABASE=laravel', \$env);
-\$env = str_replace('DB_USERNAME=root', 'DB_USERNAME=laravel', \$env);
-\$env = str_replace('DB_PASSWORD=', 'DB_PASSWORD=secret', \$env);
-file_put_contents('/var/www/.env', \$env);
+docker-compose exec -T app sh -c "
+sed -i 's/DB_HOST=.*/DB_HOST=db/' /var/www/.env
+sed -i 's/DB_DATABASE=.*/DB_DATABASE=task_management/' /var/www/.env
+sed -i 's/DB_USERNAME=.*/DB_USERNAME=laravel/' /var/www/.env
+sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret/' /var/www/.env
 "
 
 echo "8. Running migrations..."
@@ -50,3 +47,10 @@ docker-compose exec -T app chmod -R 775 /var/www/storage /var/www/bootstrap/cach
 echo "=== Deployment Complete ==="
 echo "Laravel API: http://localhost:8080"
 echo "MySQL: localhost:3306"
+echo ""
+echo "DBeaver Connection:"
+echo "  Host: localhost"
+echo "  Port: 3306"
+echo "  Database: task_management"
+echo "  User: laravel (password: secret)"
+echo "  User: root (password: root)"

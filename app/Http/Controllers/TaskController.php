@@ -92,13 +92,10 @@ class TaskController extends Controller
         return response()->json($tasks);
     }
 
-    public function byProject(Request $request, int $projectId): JsonResponse
+    public function byProject(int $projectId): JsonResponse
     {
         $tasks = Task::with(['user', 'project'])
             ->where('project_id', $projectId)
-            ->when(! $request->user()->isAdmin(), function ($query) use ($request) {
-                $query->where('user_id', $request->user()->id);
-            })
             ->get();
 
         return response()->json($tasks);
