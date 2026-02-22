@@ -8,8 +8,9 @@ Eine vollständige RESTful API für ein Aufgaben-Management-System, entwickelt m
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Architektur & Datenbankstruktur](#architektur--datenbankstruktur)
-- [Installation mit Docker](#installation-mit-docker)
+- [Deployment mit build.sh](#deployment-mit-buildsh)
 - [Installation ohne Docker (lokal)](#installation-ohne-docker-lokal)
+- [Datenbank & API testen](#für-prüfer-datenbank--api-testen)
 - [Umgebungsvariablen](#umgebungsvariablen)
 - [API Endpoints](#api-endpoints)
 - [Authentifizierung & Middleware](#authentifizierung--middleware)
@@ -132,16 +133,16 @@ tests/Unit/      (Model-, Event-, Request-Tests)
 
 ---
 
-## Installation mit Docker
+## Deployment mit build.sh
 
-> **Empfohlener Weg** – keine lokale PHP/MySQL-Installation nötig.
+> **Empfohlener Weg für Prüfer** – Ein einziger Befehl deployt die komplette Anwendung.
 
 ### Voraussetzungen
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installiert und gestartet
 - Git
 
-### Schritte
+### Deployment starten
 
 **1. Repository klonen**
 
@@ -150,34 +151,30 @@ git clone https://github.com/domejek/DomJek-LaravelREST.git
 cd DomJek-LaravelREST
 ```
 
-**2. Docker-Container starten**
+**2. Deployment-Skript ausführen**
 
 ```bash
-docker compose up -d
+chmod +x build.sh
+./build.sh
 ```
 
-Folgende Container werden gestartet:
+Das Skript führt automatisch alle Schritte aus:
 
-| Container | Dienst | Port |
-|---|---|---|
-| `app` | Laravel (PHP-FPM + Nginx) | `8000` |
-| `db` | MySQL 8.0 | `3306` |
+| Schritt | Aktion |
+|---|---|
+| 1 | Bestehende Container stoppen und Volumes entfernen |
+| 2 | Docker Images bauen (ohne Cache) |
+| 3 | Container starten |
+| 4 | Auf Datenbank warten |
+| 5 | Composer-Abhängigkeiten installieren |
+| 6 | Umgebung einrichten (.env + Key) |
+| 7 | Datenbankverbindung konfigurieren |
+| 8 | Migrationen ausführen |
+| 9 | Berechtigungen setzen |
 
-**3. Abhängigkeiten installieren & App initialisieren**
+**3. Fertig!**
 
-```bash
-docker compose exec app composer install
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate
-```
-
-**4. Optional: Testdaten einspielen**
-
-```bash
-docker compose exec app php artisan db:seed
-```
-
-Die API ist jetzt erreichbar unter: **`http://localhost:8000/api`**
+Die API ist erreichbar unter: **`http://localhost:8080/api`**
 
 ### Container stoppen
 
@@ -247,7 +244,522 @@ php artisan migrate
 php artisan serve
 ```
 
-Die API ist dann verfügbar unter: **`http://localhost:8000/api`**
+Die API ist dann verfügbar unter: **`http://localhost:8080/api`**
+
+---
+
+## Datenbank & API testen
+
+Dieser Abschnitt erklärt, wie die Datenbank und API getestet wird.
+
+### Mit DBeaver auf die Datenbank zugreifen
+
+[DBeaver](https://dbeaver.io/) ist ein kostenloses Datenbank-Verwaltungstool.
+
+**Schritt 1: DBeaver herunterladen und installieren**
+
+**Schritt 2: Neue Verbindung erstellen**
+
+1. DBeaver öffnen
+2. Klicken Sie auf "Neue Verbindung" (Steckersymbol oder `Strg+Shift+N`)
+3. Wählen Sie **MySQL** aus der Liste
+
+**Schritt 3: Verbindungsdaten eingeben**
+
+| Feld | Wert |
+|---|---|
+| Host | `localhost` |
+| Port | `3306` |
+| Datenbank | `task_management` |
+| Benutzername | `laravel` |
+| Passwort | `secret` |
+
+> Alternativ können Sie sich auch als `root` mit Passwort `root` verbinden.
+
+**Schritt 4: Verbindung testen**
+
+Klicken Sie auf "Verbindung testen". Bei Erfolg erscheint "Verbindung erfolgreich".
+
+**Schritt 5: Datenbank erkunden**
+
+Nach dem Verbinden können Sie:
+- Die Tabellen `users`, `tasks`, `projects` einsehen
+- Daten bearbeiten oder SQL-Abfragen ausführen
+- Beispiel: Admin-Rechte vergeben:
+  ```sql
+  UPDATE users SET role = 'admin' WHERE email = 'mankurium@example.com';
+  ```
+
+### Mit Postman die API testen
+
+[Postman](https://www.postman.com/downloads/) ist ein Tool zum Testen von REST-APIs.
+
+**Schritt 1: Postman herunterladen und installieren**
+
+Laden Sie Postman von https://www.postman.com/downloads/ herunter.
+
+**Schritt 2: Basis-URL**
+
+Alle Requests verwenden die Basis-URL: `http://localhost:8080/api`
+
+---
+
+#### Request 1: Benutzer registrieren (Mankurium)
+
+Erstellt einen neuen Benutzer und erhält einen Token.
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `POST` |
+| URL | `http://localhost:8080/api/register` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "name": "Mankurium",
+  "email": "mankurium@example.com",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+```
+
+**Erwartete Antwort (201 Created):**
+
+```json
+{
+  "user": { "id": 1, "name": "Mankurium", "email": "mankurium@example.com", "role": "user" },
+  "token": "1|abc123..."
+}
+```
+
+> **Wichtig:** Kopieren Sie den `token` aus der Antwort – Sie benötigen ihn für alle weiteren Requests!
+
+---
+
+#### Request 2: Benutzer registrieren (Mogus)
+
+Erstellt einen zweiten Benutzer für Tests mit mehreren Usern.
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `POST` |
+| URL | `http://localhost:8080/api/register` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "name": "Mogus",
+  "email": "mogus@example.com",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+```
+
+---
+
+#### Request 3: Login
+
+Einloggen und einen neuen Token erhalten.
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `POST` |
+| URL | `http://localhost:8080/api/login` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "email": "mankurium@example.com",
+  "password": "password123"
+}
+```
+
+---
+
+#### Request 4: Eigenes Profil abrufen
+
+Zeigt die Daten des eingeloggten Benutzers.
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `GET` |
+| URL | `http://localhost:8080/api/user` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+> Ersetzen Sie `<IHR_TOKEN>` durch den Token aus Request 1 oder 3.
+
+---
+
+#### Request 5: Projekt erstellen (Druide)
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `POST` |
+| URL | `http://localhost:8080/api/projects` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "name": "Druide",
+  "description": "Projekt für Druiden-Aufgaben"
+}
+```
+
+**Erwartete Antwort (201 Created):**
+
+```json
+{
+  "id": 1,
+  "name": "Druide",
+  "description": "Projekt für Druiden-Aufgaben",
+  "created_at": "...",
+  "updated_at": "..."
+}
+```
+
+> Notieren Sie die `id` (z.B. 1) – Sie benötigen sie für Task-Zuweisungen.
+
+---
+
+#### Request 6: Projekt erstellen (Magier)
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `POST` |
+| URL | `http://localhost:8080/api/projects` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "name": "Magier",
+  "description": "Projekt für Magier-Aufgaben"
+}
+```
+
+---
+
+#### Request 7: Alle Projekte auflisten
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `GET` |
+| URL | `http://localhost:8080/api/projects` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+---
+
+#### Request 8: Task erstellen (ohne Projekt)
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `POST` |
+| URL | `http://localhost:8080/api/tasks` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "title": "Manatränke brauen",
+  "description": "Verjüngungstränke für Mana herstellen",
+  "status": "todo",
+  "deadline": "2026-12-01 10:00:00"
+}
+```
+
+---
+
+#### Request 9: Task erstellen (mit Projekt)
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `POST` |
+| URL | `http://localhost:8080/api/tasks` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "title": "Leder verarbeiten",
+  "description": "Rüstungen aus Leder fertigen",
+  "status": "in_progress",
+  "deadline": "2026-11-15 12:00:00",
+  "project_id": 1
+}
+```
+
+> Ersetzen Sie `project_id: 1` ggf. durch die ID aus Request 5.
+
+---
+
+#### Request 10: Task erstellen (Essen braten)
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `POST` |
+| URL | `http://localhost:8080/api/tasks` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "title": "Essen braten",
+  "description": "Nahrhafte Mahlzeiten für die Gruppe zubereiten",
+  "status": "todo",
+  "deadline": "2026-12-20 18:00:00"
+}
+```
+
+---
+
+#### Request 11: Alle Tasks auflisten
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `GET` |
+| URL | `http://localhost:8080/api/tasks` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+---
+
+#### Request 12: Einzelnen Task anzeigen
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `GET` |
+| URL | `http://localhost:8080/api/tasks/1` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+> Ersetzen Sie `1` durch die Task-ID aus Request 8.
+
+---
+
+#### Request 13: Task aktualisieren
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `PUT` |
+| URL | `http://localhost:8080/api/tasks/1` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "status": "in_progress"
+}
+```
+
+---
+
+#### Request 14: Task einem Projekt zuweisen
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `PUT` |
+| URL | `http://localhost:8080/api/tasks/1` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "project_id": 1
+}
+```
+
+---
+
+#### Request 15: Überfällige Tasks anzeigen
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `GET` |
+| URL | `http://localhost:8080/api/tasks/overdue` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+---
+
+#### Request 16: Tasks eines Projekts
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `GET` |
+| URL | `http://localhost:8080/api/projects/1/tasks` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+---
+
+#### Request 17: Tasks eines Benutzers
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `GET` |
+| URL | `http://localhost:8080/api/users/1/tasks` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+> Ersetzen Sie `1` durch die User-ID.
+
+---
+
+#### Request 18: Task löschen
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `DELETE` |
+| URL | `http://localhost:8080/api/tasks/1` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+**Erwartete Antwort:** 200 OK oder 204 No Content
+
+---
+
+#### Request 19: Logout
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `POST` |
+| URL | `http://localhost:8080/api/logout` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+---
+
+### Validierungsfehler testen
+
+#### Fehler 1: Ungültiger Status
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `POST` |
+| URL | `http://localhost:8080/api/tasks` |
+| Header | `Content-Type: application/json` |
+| Header | `Accept: application/json` |
+| Header | `Authorization: Bearer <IHR_TOKEN>` |
+
+**Body (raw → JSON):**
+
+```json
+{
+  "title": "Test Task",
+  "description": "Test Beschreibung",
+  "status": "ungueltig"
+}
+```
+
+**Erwartete Antwort:** 422 Unprocessable Entity
+
+---
+
+#### Fehler 2: Deadline in der Vergangenheit
+
+**Body (raw → JSON):**
+
+```json
+{
+  "title": "Vergangenheit Task",
+  "description": "Deadline liegt in der Vergangenheit",
+  "status": "todo",
+  "deadline": "2020-01-01 00:00:00"
+}
+```
+
+**Erwartete Antwort:** 422 Unprocessable Entity
+
+---
+
+#### Fehler 3: Kein Token (Unauthorized)
+
+| Einstellung | Wert |
+|---|---|
+| Methode | `GET` |
+| URL | `http://localhost:8080/api/tasks` |
+| Header | `Accept: application/json` |
+
+> Kein Authorization-Header!
+
+**Erwartete Antwort:** 401 Unauthorized
+
+---
+
+#### Fehler 4: Titel zu lang (>255 Zeichen)
+
+**Body (raw → JSON):**
+
+```json
+{
+  "title": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "description": "Test",
+  "status": "todo"
+}
+```
+
+**Erwartete Antwort:** 422 Unprocessable Entity
+
+---
+
+### Beispiel-Daten im System
+
+Nach dem Ausführen der Requests haben Sie folgende Testdaten:
+
+**Benutzer:**
+
+| Name | E-Mail | Rolle |
+|---|---|---|
+| Mankurium | mankurium@example.com | user |
+| Mogus | mogus@example.com | user |
+
+**Projekte:**
+
+| Name | Beschreibung |
+|---|---|
+| Druide | Projekt für Druiden-Aufgaben |
+| Magier | Projekt für Magier-Aufgaben |
+
+**Tasks:**
+
+| Titel | Beschreibung | Status | Projekt |
+|---|---|---|---|
+| Manatränke brauen | Verjüngungstränke für Mana herstellen | todo | – |
+| Leder verarbeiten | Rüstungen aus Leder fertigen | in_progress | Druide |
+| Essen braten | Nahrhafte Mahlzeiten für die Gruppe zubereiten | todo | – |
 
 ---
 
@@ -334,7 +846,7 @@ Alle Routen (außer Register/Login) erfordern einen gültigen Bearer Token im `A
 **Registrierung**
 
 ```bash
-curl -X POST http://localhost:8000/api/register \
+curl -X POST http://localhost:8080/api/register \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Mankurium",
@@ -354,7 +866,7 @@ curl -X POST http://localhost:8000/api/register \
 **Task erstellen**
 
 ```bash
-curl -X POST http://localhost:8000/api/tasks \
+curl -X POST http://localhost:8080/api/tasks \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -369,7 +881,7 @@ curl -X POST http://localhost:8000/api/tasks \
 **Task aktualisieren**
 
 ```bash
-curl -X PUT http://localhost:8000/api/tasks/1 \
+curl -X PUT http://localhost:8080/api/tasks/1 \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{ "status": "in_progress" }'
