@@ -17,13 +17,15 @@ class TaskController extends Controller
             ->when(! $request->user()->isAdmin(), function ($query) use ($request) {
                 $query->where('user_id', $request->user()->id);
             })
-            ->get();
+            ->paginate(15);
 
         return response()->json($tasks);
     }
 
     public function store(StoreTaskRequest $request): JsonResponse
     {
+        $this->authorize('create', Task::class);
+
         $task = $request->user()->tasks()->create($request->validated());
 
         return response()->json($task->load(['user', 'project']), 201);
@@ -31,22 +33,14 @@ class TaskController extends Controller
 
     public function show(Request $request, Task $task): JsonResponse
     {
-        if (! $request->user()->isAdmin() && $task->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Nicht autorisiert'], 403);
-        }
+        $this->authorize('view', $task);
 
         return response()->json($task->load(['user', 'project']));
     }
 
     public function update(UpdateTaskRequest $request, Task $task): JsonResponse
     {
-        if (! $request->user()->isAdmin() && $task->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Nicht autorisiert'], 403);
-        }
-
-        if ($task->deadline && $task->deadline->isPast() && ! $request->user()->isAdmin()) {
-            return response()->json(['message' => 'Überfällige Aufgaben können nicht bearbeitet werden'], 403);
-        }
+        $this->authorize('update', $task);
 
         $oldDeadline = $task->deadline;
         $task->update($request->validated());
@@ -58,9 +52,7 @@ class TaskController extends Controller
 
     public function destroy(Request $request, Task $task): JsonResponse
     {
-        if (! $request->user()->isAdmin() && $task->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Nicht autorisiert'], 403);
-        }
+        $this->authorize('delete', $task);
 
         $task->delete();
 
@@ -74,7 +66,7 @@ class TaskController extends Controller
             ->when(! $request->user()->isAdmin(), function ($query) use ($request) {
                 $query->where('user_id', $request->user()->id);
             })
-            ->get();
+            ->paginate(15);
 
         return response()->json($tasks);
     }
@@ -87,16 +79,18 @@ class TaskController extends Controller
 
         $tasks = Task::with(['user', 'project'])
             ->where('user_id', $userId)
-            ->get();
+            ->paginate(15);
 
         return response()->json($tasks);
     }
 
-    public function byProject(int $projectId): JsonResponse
+    public function byProject(Request $request, int $projectId): JsonResponse
     {
+        $this->authorize('viewAny', Task::class);
+
         $tasks = Task::with(['user', 'project'])
             ->where('project_id', $projectId)
-            ->get();
+            ->paginate(15);
 
         return response()->json($tasks);
     }

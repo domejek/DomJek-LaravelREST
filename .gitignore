@@ -18,6 +18,7 @@
 
 /postman
 /vendor
+/vendor.*
 /node_modules
 
 /.phpunit.result.cache

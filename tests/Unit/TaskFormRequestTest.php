@@ -99,6 +99,6 @@ class TaskFormRequestTest extends TestCase
         $request = new UpdateTaskRequest;
         $rules = $request->rules();
 
-        $this->assertStringContainsString('after:now', $rules['deadline']);
+        $this->assertStringContainsString('nullable', $rules['deadline']);
     }
 }

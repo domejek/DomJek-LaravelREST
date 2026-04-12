@@ -114,4 +114,17 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-cache-'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | This option configures whether the cache store should serialize cached
+    | objects for storage. When set to false, only arrays and scalar values
+    | will be cached, which hardens the application against object injection.
+    |
+    */
+
+    'serializable_classes' => false,
+
 ];

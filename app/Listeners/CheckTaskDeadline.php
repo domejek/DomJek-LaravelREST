@@ -10,8 +10,12 @@ class CheckTaskDeadline
     public function handle(TaskUpdated $event): void
     {
         $task = $event->task;
+        $oldDeadline = $event->oldDeadline;
 
-        if ($task->deadline && $task->deadline->isPast()) {
+        $wasNotOverdue = is_null($oldDeadline) || ! $oldDeadline->isPast();
+        $isNowOverdue = $task->deadline && $task->deadline->isPast();
+
+        if ($wasNotOverdue && $isNowOverdue) {
             $task->user->notify(new TaskDeadlineNotification($task));
         }
     }

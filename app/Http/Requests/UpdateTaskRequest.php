@@ -17,7 +17,7 @@ class UpdateTaskRequest extends FormRequest
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
             'status' => 'sometimes|string|in:todo,in_progress,done',
-            'deadline' => 'sometimes|date|after:now',
+            'deadline' => 'sometimes|date|nullable',
             'project_id' => 'nullable|exists:projects,id',
         ];
     }

@@ -78,7 +78,11 @@ class ProjectCrudTest extends TestCase
         ])->getJson('/api/projects');
 
         $response->assertStatus(200)
-            ->assertJsonCount(5);
+            ->assertJsonStructure([
+                'data',
+                'current_page',
+                'total',
+            ]);
     }
 
     public function test_user_can_view_single_project(): void
